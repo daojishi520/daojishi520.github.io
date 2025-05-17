@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>吴旺泽专属倒计时</title>
+    <title>WWZ专属倒计时</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -46,6 +46,7 @@
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             transition: background-color 0.3s ease, transform 0.3s ease;
+            position: relative;
         }
         .event:hover {
             background: #e0f7fa;
@@ -62,46 +63,94 @@
             top: 0;
             border-radius: 5px 0 0 5px;
         }
+        #addForm {
+            margin-top: 20px;
+        }
+        input[type="text"], input[type="date"] {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        button {
+            padding: 8px 16px;
+            margin-top: 10px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>吴旺泽专属倒计时</h1>
+        <h1>WWZ专属倒计时</h1>
         <div id="countdowns">
             <div class="event" id="exam">期末考试: </div>
             <div class="event" id="newYearEve">除夕: </div>
-            <div class="event" id="gaokao">高考: </div>
+            <div class="event" id="gaokao">2027年高考: </div>
+            <div class="event" id="juniorGaokao">2025年高考: </div>
+            <div class="event" id="seniorGaokao">2026年高考: </div>
         </div>
+        <form id="addForm">
+            <input type="text" id="eventName" placeholder="事件名称" required>
+            <input type="date" id="eventDate" required>
+            <button type="submit">添加倒计时</button>
+        </form>
     </div>
 
     <script>
-        // Define the target dates
         const events = [
             { id: "exam", name: "期末考试", date: new Date("2025-01-20T00:00:00") },
             { id: "newYearEve", name: "除夕", date: new Date("2025-01-28T00:00:00") },
-            { id: "gaokao", name: "高考", date: new Date("2027-06-07T00:00:00") }
+            { id: "gaokao", name: "2027年高考", date: new Date("2027-06-07T00:00:00") },
+            { id: "juniorGaokao", name: "2025年高考", date: new Date("2025-06-07T00:00:00") },
+            { id: "seniorGaokao", name: "2026年高考", date: new Date("2026-06-07T00:00:00") }
         ];
 
-        // Function to update countdown
         function updateCountdown() {
             const now = new Date();
             events.forEach(event => {
                 const timeDiff = event.date - now;
+                const el = document.getElementById(event.id);
+                if (!el) return;
                 if (timeDiff > 0) {
                     const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
                     const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                     const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-                    document.getElementById(event.id).innerText = `${event.name}: ${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒`;
+                    el.innerText = `${event.name}: ${days}天 ${hours}小时 ${minutes}分钟 ${seconds}秒`;
                 } else {
-                    document.getElementById(event.id).innerText = `${event.name}: 已经到啦！`;
+                    el.innerText = `${event.name}: 已经到啦！`;
                 }
             });
         }
 
-        // Update countdown every second
         setInterval(updateCountdown, 1000);
         updateCountdown();
+
+        document.getElementById("addForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const name = document.getElementById("eventName").value.trim();
+            const date = new Date(document.getElementById("eventDate").value);
+            if (name && !isNaN(date.getTime())) {
+                const id = `event_${Date.now()}`;
+                const newDiv = document.createElement("div");
+                newDiv.className = "event";
+                newDiv.id = id;
+                document.getElementById("countdowns").appendChild(newDiv);
+                events.push({ id, name, date });
+                updateCountdown();
+                document.getElementById("eventName").value = "";
+                document.getElementById("eventDate").value = "";
+            }
+        });
     </script>
 </body>
 </html>
